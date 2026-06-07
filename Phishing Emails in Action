@@ -1,0 +1,257 @@
+# TryHackMe Writeup: Phishing Emails in Action
+
+**Platform:** TryHackMe  
+**Room:** [Phishing Emails in Action](https://tryhackme.com/room/phishingemails2rytmuv)  
+**Difficulty:** Easy  
+**Category:** Social Engineering / Phishing Analysis  
+**Completed by:** Haziq Danial Bin Nor Azan  
+**Date:** June 2026
+
+---
+
+## Overview
+
+This room is a continuation of the Phishing Analysis module. It focuses on analysing real-world phishing email samples to identify indicators of compromise, phishing techniques, and attacker methodologies. Each task presents a different phishing scenario targeting well-known brands such as PayPal, Netflix, Apple, and DHL.
+
+---
+
+## Task 1 – Introduction
+
+This room transitions from theory to practice by examining actual phishing email samples. The objectives are to:
+- Identify common social engineering tactics used in phishing
+- Analyse red flags contained within phishing emails
+- Detect link manipulation and tracking pixels
+- Deconstruct credential harvesting and attachment manipulation
+
+> **Note:** All email samples in this room contain information from actual phishing emails. Exercise caution when interacting with any IP address, domain, or attachment.
+
+<p align="center">
+  <img src="Screenshort/Intro.png" width="600">
+</p>
+
+---
+
+## Task 2 – Cancel Your Order (PayPal Phishing)
+
+### Phishing Techniques Used
+- **Spoofed email address** – Mimicking PayPal to gain credibility
+- **URL shortening** – Using redirection services to hide the true destination
+- **Branded HTML** – Impersonating corporate imagery to appear authentic
+
+### Analysis
+
+This phishing email impersonates PayPal, claiming a $120.00 purchase was made from "Amazing Stuff". The email creates urgency by presenting a **"Cancel the order"** button. However, several red flags are apparent:
+
+1. The From address displays `service@paypal.com` but the actual sender is `gibberish@sultanbogor.com`
+2. The To address is an unusual recipient, not a normal Yahoo domain
+3. The **"Cancel the order"** button leads to a shortened URL (`https://is.gd/6oCJ4m`) that redirects to an unknown destination
+
+### Question & Answer
+
+**Q: Who is listed as the Merchant in the email body?**
+> **Answer:** `Amazing Stuff`
+
+<p align="center">
+  <img src="Screenshort/Cancel Your Order.png" width="600">
+</p>
+
+---
+
+## Task 3 – Track Your Package (Shipping Notification Phishing)
+
+### Phishing Techniques Used
+- **Spoofed email address** – Mimicking a trusted distribution centre
+- **Pixel tracking** – Embedding invisible images to notify the sender when email is opened
+- **Link manipulation** – Masking a malicious destination with a fake tracking number
+
+### Analysis
+
+This phishing email mimics a shipping notification with a fake tracking number (LZ8942357486EN). Key observations:
+
+1. The display name shows "Distribution Center" but the actual domain is `contact@beginpro.club`
+2. The hyperlink in the email points to a malicious domain (`devret.xyz`)
+3. A **tracking pixel** (`Tracking.png`) is embedded to notify the attacker when the email is opened
+4. Yahoo blocked the images automatically, which is a common defence against tracking pixels
+
+### Question & Answer
+
+**Q: What root domain does the hyperlink point to? (defanged)**
+> **Answer:** `devret[.]xyz`
+
+<p align="center">
+  <img src="Screenshort/Track Your Package.png" width="600">
+</p>
+
+---
+
+## Task 4 – Download Document Here (Credential Harvesting)
+
+### Phishing Techniques Used
+- **Artificial urgency** – Creating a narrow window for action
+- **Brand impersonation** – Layering trusted brands (Microsoft, Adobe, Citrix) to build false trust
+- **Link redirection** – Using a chain of URLs to hide the final malicious destination
+- **Credential harvesting** – Deploying a fake login portal to capture usernames and passwords
+
+### Analysis
+
+This phishing email mimics a Citrix fax notification, claiming a document expires on July 15th, 2021. The attack chain works as follows:
+
+1. Victim clicks **"Download Document Here"**
+2. Redirected to a fake OneDrive page (shady URL)
+3. Second redirection to a fake Adobe Document Cloud page
+4. Final landing page: a **fake Outlook login portal** at `bdkmotorsport.com/wp-duaa`
+5. Credentials entered are sent directly to the attacker's server — victim receives a generic "Invalid Credentials" error
+
+### Question & Answer
+
+**Q: The attacker deployed a fake portal to capture and exfiltrate user credentials. What is this type of attack called?**
+> **Answer:** `Credential Harvesting`
+
+<p align="center">
+  <img src="Screenshort/Download Document Here.png" width="600">
+</p>
+
+---
+
+## Task 5 – Your Account Is on Hold (Netflix Phishing)
+
+### Phishing Techniques Used
+- **Spoofed email address** – Display name set to "Netllx billing" (misspelled)
+- **Sense of urgency** – Suspended account notification to pressure immediate action
+- **Brand impersonation** – HTML templates and logos mimicking Netflix billing
+- **Poor grammar and typos** – "Netllx" instead of "Netflix"
+- **Attachments** – Using a PDF file attachment to hide the malicious URL
+
+### Analysis
+
+This phishing email impersonates Netflix with the subject "Netflix ID Suspended". Red flags include:
+
+1. The sender display name is misspelled — **"Netllx billing"** (double-L instead of one)
+2. The actual sender email (`z99@musacombi.online`) does not match Netflix's official domain
+3. The recipient was **BCC'd** rather than directly emailed
+4. A PDF attachment named "Payment-up....pdf" contains an **"Update Payment Account"** button linking to a non-Netflix URL
+
+### Question & Answer
+
+**Q: What is the actual sender email address hidden behind the "Netllx billing" display name?**
+> **Answer:** `z99@musacombi.online`
+
+<p align="center">
+  <img src="Screenshort/Your Account Is On Hold.png" width="600">
+</p>
+
+---
+
+## Task 6 – Your Recent Purchase (Apple Support Phishing)
+
+### Phishing Techniques Used
+- **Spoofed email address** – Display name set to "Apple Support"
+- **Recipient is BCC'd** – Victim was not directly emailed
+- **Urgency** – "Action Required" with a fake App Store purchase
+- **Poor grammar and typos** – Spelling errors in From and To addresses
+- **Attachments** – A `.dot` file (Microsoft Word Template) containing a redirect link
+
+### Analysis
+
+This phishing email impersonates Apple Support, claiming an unauthorised $14.99 App Store purchase ("Double Jackpot Slots Las Vegas"). Key red flags:
+
+1. The actual sender is `donoreply-storemailsedmopzl07zo7o9@sumpremed.com`, not Apple
+2. The recipient was **Blind Carbon Copied (BCC'd)** — a common technique to hide the recipient list
+3. The email body is completely blank — only a `.dot` attachment is present
+4. The attachment contains a long, complex redirect URL using Tumblr to mask the final phishing destination
+
+### Questions & Answers
+
+**Q1: What does the acronym BCC stand for?**
+> **Answer:** `Blind Carbon Copy`
+
+**Q2: What is the file extension of the attachment?**
+> **Answer:** `.dot`
+
+<p align="center">
+  <img src="Screenshort/Your Recent Purchase.png" width="600">
+</p>
+
+---
+
+## Task 7 – Scheduled Shipment (DHL Phishing)
+
+### Phishing Techniques Used
+- **Spoofed email address** – Display name set to "DHL Express"
+- **Brand impersonation** – HTML templates and logos mimicking DHL
+- **Attachments** – An Excel (`.xlsx`) document that triggers an executable payload
+
+### Analysis
+
+This phishing email impersonates DHL Express with a fake courier shipment notification. The email contains an `.xlsx` attachment with several glaring inconsistencies:
+
+1. The sender uses a German domain (`info@glamcarcompany.de`) while the invoice is addressed to a city in India
+2. The Excel document content is in Mandarin Chinese — conflicting geographical markers
+3. The document contains a single clickable hyperlink
+4. When clicked, the link attempts to download and execute a malicious payload: **`regasms.exe`**
+5. The executable attempts to run as a 16-bit MS-DOS application, resulting in a system error in the test environment
+
+If successfully executed, the attacker could:
+- Establish persistence via backdoor
+- Exfiltrate sensitive data and credentials
+- Deploy ransomware
+
+### Question & Answer
+
+**Q: What is the name of the executable that the Excel attachment attempts to run?**
+> **Answer:** `regasms.exe`
+
+<p align="center">
+  <img src="Screenshort/Schedule Ship.png" width="600">
+</p>
+
+---
+
+## Task 8 – Conclusion
+
+In this room, a series of phishing attempts across multiple scenarios were analysed. The key skills developed include:
+- Identifying spoofed sender addresses
+- Detecting URL manipulation and tracking pixels
+- Analysing malicious attachments
+- Recognising credential harvesting techniques
+
+<p align="center">
+  <img src="Screenshort/Conclusion 2.png" width="600">
+</p>
+
+---
+
+## Summary
+
+| Task | Brand Spoofed | Technique | Key Indicator |
+|------|--------------|-----------|---------------|
+| Task 2 | PayPal | URL Shortening | Sender domain mismatch |
+| Task 3 | DHL/Shipping | Tracking Pixel | Malicious domain `devret.xyz` |
+| Task 4 | Citrix/Microsoft/Adobe | Credential Harvesting | Multi-stage redirect to fake login |
+| Task 5 | Netflix | PDF Attachment | Misspelled sender name "Netllx" |
+| Task 6 | Apple | BCC + .dot Attachment | Blank email body, unusual file type |
+| Task 7 | DHL Express | Malicious .xlsx | Executable payload `regasms.exe` |
+
+---
+
+## Tools Used
+
+- **TryHackMe AttackBox** – Virtual machine environment
+- **Thunderbird** – Email client for analysing `.eml` samples
+- **WhereGoes** – URL expander to investigate shortened URLs safely
+- **Browser DevTools** – Inspecting raw HTML source of email bodies
+
+---
+
+## Key Takeaways
+
+1. **Always verify the actual sender address** — display names can be anything
+2. **Never click shortened URLs** — use tools like WhereGoes to inspect first
+3. **Defang URLs and IPs** when sharing indicators: `http://evil.com` → `hxxp[://]evil[.]com`
+4. **BCC is a red flag** — legitimate emails usually address recipients directly
+5. **Unusual attachment types** (`.dot`, `.xlsx` with macros) are common malware delivery vectors
+6. **Tracking pixels** are used to confirm active email addresses for further targeting
+
+---
+
+*Writeup written as part of Social Engineering exercise — IKB21403 Vulnerability Analysis, UniKL MIIT*
